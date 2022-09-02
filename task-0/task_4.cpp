@@ -4,6 +4,12 @@
 #include <algorithm>
 
 
+static const char not_found = 'N';
+static const char red = 'R';
+static const char blue = 'B';
+static const int get_token = 1;
+static const int get_color = 2;
+
 class Point
 {      
     public:
@@ -20,24 +26,15 @@ class Token
         Token(int x, int y) : point{x, y}, color{'N'} {};
 
         Point get_point(Token t);
-        char get_color(Point p);
+        char get_color(Point p, std::vector<Token>& vect_print, std::vector<Token>& vect_query);
     private:
         Point point;
         char color;
 };
 
-std::vector<Token> vect_print;
-std::vector<Token> vect_query;
-
-static const char not_found = 'N';
-static const char red = 'R';
-static const char blue = 'B';
-static const int get_token = 1;
-static const int get_color = 2;
-
 //===================================================================
 
-char Token::get_color(Point p)
+char Token::get_color(Point p, std::vector<Token>& vect_print, std::vector<Token>& vect_query)
 {
     for(int idx = 0; idx < vect_print.size(); ++idx)
     {
@@ -70,7 +67,7 @@ void clear_buffer() {
 
 //===================================================================
 
-void get_input_token()
+void get_input_token(std::vector<Token>& vect_print, std::vector<Token>& vect_query)
 {
     int opcode = 0;
     int x = 0;
@@ -107,7 +104,7 @@ void get_input_token()
 
 //===================================================================
 
-void get_data()
+void get_data(std::vector<Token>& vect_print, std::vector<Token>& vect_query)
 {
     int n = 0;
 
@@ -118,7 +115,7 @@ void get_data()
     {
         try
         {
-            get_input_token();
+            get_input_token(vect_print, vect_query);
             --n;
         }
         catch(std::exception& e)
@@ -131,12 +128,12 @@ void get_data()
 
 //===================================================================
 
-void output_data()
+void output_data(std::vector<Token>& vect_print, std::vector<Token>& vect_query)
 {
     for(int idx = 0; idx < vect_query.size(); ++idx)
     {
         Point p = vect_query[idx].get_point(vect_query[idx]);
-        char color = vect_query[idx].get_color(p);
+        char color = vect_query[idx].get_color(p,vect_print, vect_query);
 
         std::cout << color << std::endl;
     }
@@ -146,8 +143,11 @@ void output_data()
 
 int main()
 {
-    get_data();
-    output_data();
+    std::vector<Token> vect_print;
+    std::vector<Token> vect_query;
+
+    get_data(vect_print, vect_query);
+    output_data(vect_print, vect_query);
 
     return 0;
 }
