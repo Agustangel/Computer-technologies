@@ -204,7 +204,32 @@ int main(int argc, char** argv) {
                 }
             }
         }
-
+    } else {
+        PRINT_VERBOSE("%s -> %s\n", src, dst);
+        int overwrite = 1;
+        int force_write = 0;
+        if (overwrite) {
+            dst_fd = open(path, O_WRONLY | O_CREAT, S_IRWXU);
+            // check if we don't have permissions
+            if (dst_fd < 0) {
+                if (errno == EACCES) {
+                    if (flags.force) {
+                        force_write = 1;
+                        chmod(path, S_IRWXU);
+                    }
+                } else {
+                    perror("Could not open dst\n");
+                    exit(EXIT_FAILURE);
+                }
+            }
+            //if (force_write) {
+                ret = write(dst_fd, buffer, src_size);
+                if (ret != src_size) {
+                    perror("Error writing buffer to dst file\n");
+                    exit(EXIT_FAILURE);
+                }
+            //}
+        }
     }
 
     PRINT_VERBOSE("%s -> %s\n", src, dst);
